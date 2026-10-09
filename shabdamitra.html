@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fff8e1" />
+  <meta name="description" content="मराठी शाळा ऑस्ट्रियाच्या विद्यार्थ्यांसाठी सोपा, मजेदार मराठी शब्दगटांचा खेळ." />
+  <title>शब्दमित्र — गटांचा खजिना</title>
+  <style>
+    :root {
+      --cream: #fff8e1;
+      --paper: #ffffff;
+      --ink: #343434;
+      --muted: #706b61;
+      --green: #36864a;
+      --green-dark: #246a37;
+      --gold: #ffcf4a;
+      --gold-pale: #fff0bd;
+      --orange: #f29c38;
+      --lavender: #f0e9ff;
+      --line: #48443e;
+      --tile: #fffdf6;
+      --solved: #e7e6e1;
+      --shadow: 0 7px 0 rgba(67, 59, 42, .12), 0 10px 22px rgba(67, 59, 42, .08);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at 12px 12px, rgba(242,156,56,.12) 2px, transparent 2.7px) 0 0 / 28px 28px,
+        var(--cream);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Noto Sans Devanagari", "Nirmala UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
+    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    button:focus-visible { outline: 4px solid #5c76c9; outline-offset: 3px; }
+    .page-wrapper { width: min(100%, 920px); margin: auto; }
+    .brand-header { text-align: center; margin: 6px 0 16px; }
+    .brand-mark {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 7px 15px; border: 2px solid var(--ink); border-radius: 999px;
+      background: var(--paper); box-shadow: 0 4px 0 rgba(52,52,52,.10);
+      font-weight: 900; letter-spacing: .01em;
+    }
+    .brand-mark .mark { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--gold); font-size: 20px; transform: rotate(-7deg); }
+    .brand-header h1 { font-size: clamp(1.65rem, 5vw, 2.55rem); line-height: 1.12; margin: 10px 0 4px; font-weight: 950; }
+    .brand-header p { color: var(--muted); margin: 0; font-size: clamp(.92rem, 2.8vw, 1.08rem); }
+    .game-container {
+      width: 100%; background: var(--paper); border: 3px solid var(--line); border-radius: 24px;
+      padding: clamp(12px, 3vw, 24px); box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .game-container::before { content: ""; position: absolute; right: -24px; top: -26px; width: 82px; height: 82px; background: var(--gold-pale); border: 3px solid rgba(72,68,62,.13); border-radius: 25px; transform: rotate(19deg); pointer-events: none; }
+    .round-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; margin-bottom: 12px; }
+    .round-pill { background: var(--lavender); padding: 6px 11px; border: 1.5px solid #504761; border-radius: 999px; font-size: .9rem; font-weight: 800; }
+    .progress-text { color: var(--muted); font-weight: 750; font-size: .9rem; }
+    .scoreboard { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 10px 0 12px; }
+    .score-item { min-width: 0; text-align: center; padding: 10px 6px; border: 2px solid #e7dfc8; border-radius: 15px; background: #fffcf3; }
+    .score-label { display: block; font-size: clamp(.76rem, 2.6vw, .92rem); font-weight: 800; color: #61594a; line-height: 1.25; }
+    .score-value { display: block; margin-top: 3px; font-size: clamp(1.3rem, 4.6vw, 1.75rem); font-weight: 950; line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .round-score-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border: 2px solid #8a6410; border-radius: 16px; background: linear-gradient(105deg, #ffe28a, #fff1be);
+      padding: 10px 14px; margin-bottom: 15px; box-shadow: 0 3px 0 rgba(138,100,16,.13);
+    }
+    .round-score-copy { min-width: 0; }
+    .round-score-title { display: block; font-weight: 950; font-size: clamp(.93rem, 3vw, 1.12rem); }
+    .round-score-note { display: block; margin-top: 1px; font-size: .78rem; color: #65501f; }
+    .round-score-number { flex: 0 0 auto; min-width: 66px; text-align: center; font-size: clamp(1.8rem, 6vw, 2.25rem); font-weight: 1000; line-height: 1; color: #553d00; }
+    .instructions { margin: 0 auto 14px; text-align: center; font-size: clamp(.98rem, 3.2vw, 1.16rem); font-weight: 800; line-height: 1.45; max-width: 620px; }
+    .instructions small { display: block; font-size: .83em; font-weight: 550; color: var(--muted); margin-top: 2px; }
+    .options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(6px, 1.5vw, 11px); }
+    .option-btn {
+      min-width: 0; min-height: clamp(66px, 13vw, 94px); padding: 7px 3px;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      border: 2px solid #45413b; border-radius: 15px; background: var(--tile); color: var(--ink);
+      font-size: clamp(.92rem, 3.5vw, 1.52rem); font-weight: 900; line-height: 1.28;
+      overflow-wrap: anywhere; word-break: normal; cursor: pointer;
+      box-shadow: 0 4px 0 rgba(52,52,52,.12); transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .16s ease;
+    }
+    .option-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(52,52,52,.12); }
+    .option-btn:active:not(:disabled) { transform: translateY(1px) scale(.98); box-shadow: 0 2px 0 rgba(52,52,52,.12); }
+    .option-btn.selected { background: #e8e0ff; border-color: #684d9b; box-shadow: inset 0 0 0 2px #fff, 0 4px 0 rgba(83,61,132,.17); transform: translateY(-2px); }
+    .option-btn.tile-solved { background: var(--solved); color: #848178; border-color: #cbc9c2; box-shadow: none; cursor: default; opacity: .86; text-decoration: line-through; text-decoration-thickness: 1px; animation: solveFade .35s ease both; }
+    .game-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 16px 0 6px; }
+    .action-btn { min-height: 47px; border: 2px solid #2a6035; border-radius: 14px; padding: 10px 17px; font-weight: 900; cursor: pointer; transition: transform .15s ease, filter .15s ease, opacity .15s ease; }
+    .action-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
+    .action-btn:active:not(:disabled) { transform: translateY(1px); }
+    .action-btn:disabled { opacity: .42; cursor: not-allowed; }
+    .primary-btn { background: var(--green); color: white; box-shadow: 0 4px 0 var(--green-dark); }
+    .secondary-btn { background: white; color: #3b413b; border-color: #9a968c; box-shadow: 0 4px 0 rgba(80,73,60,.1); }
+    #feedback { min-height: 58px; margin: 9px 0 0; padding: 7px 9px; text-align: center; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; opacity: 1; }
+    #feedback .feedback-mr { font-weight: 900; font-size: clamp(.95rem, 3vw, 1.12rem); }
+    #feedback .feedback-en { color: var(--muted); font-size: .9rem; }
+    #feedback.good { background: #e8f6e9; color: #225d2c; animation: popIn .28s ease both; }
+    #feedback.bad { background: #fff0da; color: #793e0a; animation: popIn .24s ease both; }
+    #feedback.neutral { color: var(--muted); }
+    .solved-section { margin-top: 19px; padding-top: 14px; border-top: 2px dashed #d6cdb8; }
+    .solved-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 9px; }
+    .solved-heading h2 { margin: 0; font-size: 1.15rem; }
+    .solved-heading span { color: var(--muted); font-size: .84rem; font-weight: 750; }
+    .solved-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .solved-card { background: #f8f4e9; border: 1.5px solid #d8cba9; border-left: 6px solid var(--green); border-radius: 13px; padding: 9px 11px; animation: riseIn .35s ease both; min-width: 0; }
+    .solved-card h3 { margin: 0 0 3px; font-size: .98rem; }
+    .solved-card p { margin: 0; color: #554f43; line-height: 1.45; overflow-wrap: anywhere; font-size: .91rem; }
+    .empty-solved { color: #827b6d; font-size: .9rem; padding: 4px 0 7px; }
+    footer { color: #716a5e; text-align: center; font-size: .83rem; margin: 15px 6px 0; line-height: 1.5; }
+    footer strong { color: #514a3d; }
+    .overlay-screen { position: fixed; inset: 0; height: 100%; height: 100dvh; background: rgba(255,248,225,.88); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 18px; }
+    .overlay-screen.hidden { display: none; }
+    .overlay-card { width: min(100%, 420px); background: white; border: 3px solid var(--ink); border-radius: 24px; padding: clamp(22px, 6vw, 34px); text-align: center; box-shadow: 0 9px 0 rgba(67,59,42,.16), 0 18px 45px rgba(67,59,42,.18); animation: popIn .28s ease both; }
+    .overlay-emoji { font-size: 3rem; line-height: 1.2; }
+    .overlay-card h2 { margin: 9px 0 8px; font-size: clamp(1.55rem, 6vw, 2rem); line-height: 1.25; }
+    .overlay-card p { color: #615b50; margin: 7px 0 18px; line-height: 1.55; }
+    .award-score { font-size: 2.5rem; font-weight: 1000; color: #805800; margin: 4px 0 15px; }
+    .tiny-note { font-size: .83rem; color: #7b7467; margin-top: 12px; }
+    .shake { animation: shake .34s ease; }
+    @keyframes popIn { 0% { transform: scale(.96); opacity: .35; } 75% { transform: scale(1.025); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes solveFade { from { opacity: .4; transform: scale(.92); } to { opacity: .86; transform: scale(1); } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-4px); } 40%,80% { transform: translateX(4px); } }
+    @media (max-width: 440px) {
+      body { padding-left: 8px; padding-right: 8px; }
+      .brand-header { margin-bottom: 12px; }
+      .game-container { border-radius: 19px; padding: 11px; }
+      .scoreboard { gap: 5px; }
+      .score-item { padding: 8px 3px; border-radius: 12px; }
+      .round-score-banner { padding: 9px 11px; }
+      .option-btn { border-radius: 11px; min-height: 69px; padding: 5px 2px; font-size: clamp(.82rem, 3.55vw, 1.05rem); }
+      .solved-groups { grid-template-columns: 1fr; }
+      .game-controls { gap: 8px; }
+      .action-btn { flex: 1 1 135px; padding-left: 8px; padding-right: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-wrapper">
+    <header class="brand-header">
+      <div class="brand-mark"><span class="mark" aria-hidden="true">🧩</span><span>मराठी शाळा ऑस्ट्रिया</span></div>
+      <h1>शब्दमित्र</h1>
+      <p>शब्दांचे गट शोधा आणि गुण मिळवा!</p>
+    </header>
+
+    <section class="game-container" aria-label="शब्दमित्र खेळ">
+      <div class="round-meta">
+        <span class="round-pill" id="roundLabel">फेरी १ / १३</span>
+        <span class="progress-text" id="progressText">सापडलेले गट: ० / ४</span>
+      </div>
+
+      <div class="scoreboard" aria-label="गुणफलक">
+        <div class="score-item"><span class="score-label">एकूण गुण</span><span class="score-value" id="score">०००</span></div>
+        <div class="score-item"><span class="score-label">सर्वोच्च गुण</span><span class="score-value" id="highscore">०००</span></div>
+        <div class="score-item"><span class="score-label">चुकीचे प्रयत्न</span><span class="score-value" id="wrongCount">०</span></div>
+      </div>
+
+      <div class="round-score-banner" aria-live="polite">
+        <div class="round-score-copy">
+          <span class="round-score-title">या फेरीचे गुण</span>
+          <span class="round-score-note">फेरी पूर्ण झाल्यावर मिळतील · प्रत्येक चुकीच्या प्रयत्नाला −२ गुण</span>
+        </div>
+        <span class="round-score-number" id="roundPotential">५०</span>
+      </div>
+
+      <p class="instructions">एकाच गटातील ४ शब्द निवडा.
+        <small>Choose 4 words that belong together.</small>
+      </p>
+
+      <div class="options" id="options" aria-label="शब्द निवडा"></div>
+
+      <div class="game-controls">
+        <button class="action-btn primary-btn" id="checkBtn" disabled>गट जुळवा ✓</button>
+        <button class="action-btn secondary-btn" id="clearBtn">निवड पुसा ↺</button>
+      </div>
+
+      <div id="feedback" class="neutral" role="status" aria-live="polite">
+        <span class="feedback-mr">चार शब्द निवडा आणि “गट जुळवा” दाबा.</span>
+        <span class="feedback-en">Pick four words, then tap “Match group”.</span>
+      </div>
+
+      <section class="solved-section" aria-label="सापडलेले गट">
+        <div class="solved-heading">
+          <h2>🎉 सापडलेले गट</h2>
+          <span id="solvedCount">० / ४</span>
+        </div>
+        <div class="empty-solved" id="emptySolved">गट सापडल्यावर ते इथे दिसतील.</div>
+        <div class="solved-groups" id="solvedGroups"></div>
+      </section>
+    </section>
+
+    <footer>
+      लहान मुलांसाठी मराठी शब्दांचा खेळ · <strong>मराठी शाळा ऑस्ट्रिया</strong><br />
+      तुमचा सर्वोच्च गुण या ब्राउझरमध्ये जतन होतो.
+    </footer>
+  </main>
+
+  <div class="overlay-screen hidden" id="roundOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+    <div class="overlay-card">
+      <div class="overlay-emoji" id="overlayEmoji" aria-hidden="true">🌟</div>
+      <h2 id="overlayTitle">शाब्बास!</h2>
+      <p id="overlayMessage">तुम्ही या फेरीतील चारही गट शोधले.</p>
+      <div class="award-score" id="awardScore">+५० गुण</div>
+      <button class="action-btn primary-btn" id="nextRoundBtn">पुढची फेरी →</button>
+      <div class="tiny-note" id="overlayNote">छान खेळलात!</div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    const GROUPS = [{"id":1,"title":"शेतातील प्राणी","words":["गाय","बैल","शेळी","घोडा"]},{"id":2,"title":"जंगलातील प्राणी","words":["वाघ","सिंह","हत्ती","माकड"]},{"id":3,"title":"पाळीव प्राणी","words":["कुत्रा","मांजर","ससा","पोपट"]},{"id":4,"title":"पक्षी","words":["मोर","कावळा","पोपट","चिमणी"]},{"id":5,"title":"आणखी पक्षी","words":["घार","घुबड","बगळा","कबूतर"]},{"id":6,"title":"पाण्यातील जीव","words":["मासा","कासव","खेकडा","बेडूक"]},{"id":7,"title":"फळे","words":["आंबा","केळे","पेरू","पपई"]},{"id":8,"title":"फळे","words":["सफरचंद","द्राक्षे","चिकू","सीताफळ"]},{"id":9,"title":"भाज्या","words":["बटाटा","कांदा","गाजर","मुळा"]},{"id":10,"title":"भाज्या","words":["भेंडी","दोडका","दुधी","पडवळ"]},{"id":11,"title":"पालेभाज्या","words":["पालक","मेथी","माठ","शेपू"]},{"id":12,"title":"फळभाज्या","words":["वांगे","भोपळा","टोमॅटो","ढोबळी मिरची"]},{"id":13,"title":"रंग","words":["लाल","निळा","हिरवा","पिवळा"]},{"id":14,"title":"आणखी रंग","words":["काळा","पांढरा","जांभळा","गुलाबी"]},{"id":15,"title":"आठवड्यातील वार","words":["सोमवार","मंगळवार","बुधवार","गुरुवार"]},{"id":16,"title":"वार","words":["शुक्रवार","शनिवार","रविवार","सोमवार"]},{"id":17,"title":"महिने","words":["जून","जुलै","मे","मार्च"]},{"id":18,"title":"ऋतू","words":["उन्हाळा","पावसाळा","हिवाळा","वसंत"]},{"id":19,"title":"शाळेतील वस्तू","words":["पाटी","खडू","वही","पेन"]},{"id":20,"title":"शाळेतील आणखी वस्तू","words":["दप्तर","पट्टी","पुस्तक","पेन्सिल"]},{"id":21,"title":"घरातील वस्तू","words":["टेबल","खुर्ची","पलंग","कपाट"]},{"id":22,"title":"स्वयंपाकघरातील वस्तू","words":["ताट","वाटी","चमचा","तवा"]},{"id":23,"title":"कपडे","words":["साडी","टोपी","शर्ट","धोतर"]},{"id":24,"title":"पायात घालायच्या वस्तू","words":["बूट","चप्पल","मोजे","सॅंडल"]},{"id":25,"title":"शरीराचे अवयव","words":["डोळा","कान","नाक","हात"]},{"id":26,"title":"शरीराचे आणखी अवयव","words":["पाय","मान","दात","जीभ"]},{"id":27,"title":"नाती","words":["आई","बाबा","ताई","दादा"]},{"id":28,"title":"कुटुंबातील नाती","words":["आजी","आजोबा","मामा","मावशी"]},{"id":29,"title":"व्यवसाय","words":["डॉक्टर","शिक्षक","शेतकरी","पोलीस"]},{"id":30,"title":"घरातील माणसे","words":["आई","बाबा","भाऊ","बहीण"]},{"id":31,"title":"फुले","words":["गुलाब","कमळ","जास्वंद","मोगरा"]},{"id":32,"title":"झाडे","words":["आंबा","वड","पिंपळ","नारळ"]},{"id":33,"title":"आकाशातील गोष्टी","words":["सूर्य","चंद्र","तारे","ढग"]},{"id":34,"title":"पाण्याचे स्रोत","words":["नदी","विहीर","तलाव","झरा"]},{"id":35,"title":"हवामान","words":["ऊन","पाऊस","वारा","धुके"]},{"id":36,"title":"कीटक","words":["मुंगी","माशी","डास","मधमाशी"]},{"id":37,"title":"जेवणातील पदार्थ","words":["पोळी","भात","भाजी","वरण"]},{"id":38,"title":"गोड पदार्थ","words":["लाडू","पेढा","बर्फी","जिलबी"]},{"id":39,"title":"वाहने","words":["बस","कार","जीप","रिक्षा"]},{"id":40,"title":"खेळ","words":["कबड्डी","खो-खो","लगोरी","लपाछपी"]},{"id":41,"title":"फळे","words":["संत्रे","मोसंबी","अंजीर","जांभूळ"]},{"id":42,"title":"प्राणी","words":["उंदीर","कोल्हा","अस्वल","हरिण"]},{"id":43,"title":"पक्षी","words":["बदक","कोंबडी","हंस","ससाणा"]},{"id":44,"title":"भाज्या","words":["मिरची","काकडी","शेंगा","बीट"]},{"id":45,"title":"आणखी गोड पदार्थ","words":["खीर","शिरा","पुरणपोळी","मोदक"]},{"id":46,"title":"वाहने","words":["रेल्वे","विमान","होडी","ट्रक"]},{"id":47,"title":"खेळणी","words":["चेंडू","बाहुली","भिंगरी","भोवरा"]},{"id":48,"title":"वाद्ये","words":["ढोल","तबला","वीणा","बासरी"]},{"id":49,"title":"सण","words":["दिवाळी","होळी","दसरा","गुढीपाडवा"]},{"id":50,"title":"देवांची नावे","words":["गणपती","राम","कृष्ण","शिव"]},{"id":51,"title":"महाराष्ट्रातील शहरे","words":["पुणे","मुंबई","नाशिक","नागपूर"]},{"id":52,"title":"पावसाळ्यातील गोष्टी","words":["छत्री","रेनकोट","ढग","पाऊस"]}];
+    const ROUNDS = [[1,2,3,42],[4,5,6,43],[7,8,41,31],[9,10,11,44],[13,14,17,18],[15,19,20,21],[16,22,23,24],[25,26,28,29],[27,32,33,34],[30,35,36,37],[12,38,39,40],[45,46,47,48],[49,50,51,52]];
+
+    const MARATHI_DIGITS = ['०','१','२','३','४','५','६','७','८','९'];
+    const toMarathiDigits = (value) => String(value).replace(/[0-9]/g, digit => MARATHI_DIGITS[Number(digit)]);
+    const formatScore = (value) => toMarathiDigits(String(value).padStart(3, '0'));
+    const groupById = new Map(GROUPS.map(group => [group.id, group]));
+
+    const optionsEl = document.getElementById('options');
+    const scoreEl = document.getElementById('score');
+    const highscoreEl = document.getElementById('highscore');
+    const wrongCountEl = document.getElementById('wrongCount');
+    const roundPotentialEl = document.getElementById('roundPotential');
+    const roundLabelEl = document.getElementById('roundLabel');
+    const progressTextEl = document.getElementById('progressText');
+    const solvedCountEl = document.getElementById('solvedCount');
+    const solvedGroupsEl = document.getElementById('solvedGroups');
+    const emptySolvedEl = document.getElementById('emptySolved');
+    const feedbackEl = document.getElementById('feedback');
+    const checkBtn = document.getElementById('checkBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const roundOverlay = document.getElementById('roundOverlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayMessage = document.getElementById('overlayMessage');
+    const overlayEmoji = document.getElementById('overlayEmoji');
+    const awardScore = document.getElementById('awardScore');
+    const nextRoundBtn = document.getElementById('nextRoundBtn');
+    const overlayNote = document.getElementById('overlayNote');
+
+    let roundIndex = 0;
+    let totalScore = 0;
+    let highScore = readHighScore();
+    let wrongThisRound = 0;
+    let totalWrong = 0;
+    let solvedIds = new Set();
+    let selectedIndices = new Set();
+    let currentTiles = [];
+    let tileButtons = [];
+    let roundEnded = false;
+
+    function readHighScore() {
+      try { return Math.max(0, Number(localStorage.getItem('shabdamitraHighScore')) || 0); }
+      catch (_) { return 0; }
+    }
+    function saveHighScore(value) {
+      try { localStorage.setItem('shabdamitraHighScore', String(value)); } catch (_) { /* storage may be unavailable */ }
+    }
+    function shuffle(array) {
+      const result = array.slice();
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+    function pointsForRound() { return Math.max(20, 50 - 2 * wrongThisRound); }
+    function activeGroups() {
+      return ROUNDS[roundIndex].map(id => groupById.get(id)).filter(group => !solvedIds.has(group.id));
+    }
+    function showFeedback(kind, marathi, english = '') {
+      feedbackEl.className = kind;
+      feedbackEl.replaceChildren();
+      const mr = document.createElement('span');
+      mr.className = 'feedback-mr';
+      mr.textContent = marathi;
+      feedbackEl.appendChild(mr);
+      if (english) {
+        const en = document.createElement('span');
+        en.className = 'feedback-en';
+        en.textContent = english;
+        feedbackEl.appendChild(en);
+      }
+    }
+    function renderScoreboard() {
+      scoreEl.textContent = formatScore(totalScore);
+      highscoreEl.textContent = formatScore(highScore);
+      wrongCountEl.textContent = toMarathiDigits(totalWrong);
+      roundPotentialEl.textContent = toMarathiDigits(pointsForRound());
+      roundLabelEl.textContent = `फेरी ${toMarathiDigits(roundIndex + 1)} / ${toMarathiDigits(ROUNDS.length)}`;
+      progressTextEl.textContent = `सापडलेले गट: ${toMarathiDigits(solvedIds.size)} / ४`;
+      solvedCountEl.textContent = `${toMarathiDigits(solvedIds.size)} / ४`;
+    }
+    function renderSolvedGroups() {
+      solvedGroupsEl.replaceChildren();
+      emptySolvedEl.hidden = solvedIds.size > 0;
+      ROUNDS[roundIndex].filter(id => solvedIds.has(id)).forEach((id) => {
+        const group = groupById.get(id);
+        const card = document.createElement('article');
+        card.className = 'solved-card';
+        const heading = document.createElement('h3');
+        heading.textContent = `✓ ${group.title}`;
+        const words = document.createElement('p');
+        words.textContent = group.words.join(' · ');
+        card.append(heading, words);
+        solvedGroupsEl.appendChild(card);
+      });
+    }
+    function updateSelectionUI() {
+      tileButtons.forEach((button, index) => {
+        if (!button.disabled) button.classList.toggle('selected', selectedIndices.has(index));
+      });
+      checkBtn.disabled = selectedIndices.size !== 4 || roundEnded;
+      checkBtn.textContent = selectedIndices.size === 4 ? 'गट जुळवा ✓' : `गट जुळवा (${toMarathiDigits(selectedIndices.size)}/४)`;
+    }
+    function loadRound() {
+      solvedIds = new Set();
+      selectedIndices = new Set();
+      wrongThisRound = 0;
+      roundEnded = false;
+      const groupsForRound = ROUNDS[roundIndex].map(id => groupById.get(id));
+      currentTiles = shuffle(groupsForRound.flatMap(group => group.words.map(word => ({ word, groupId: group.id }))));
+      optionsEl.replaceChildren();
+      tileButtons = currentTiles.map((tile, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'option-btn';
+        button.textContent = tile.word;
+        button.setAttribute('aria-pressed', 'false');
+        button.addEventListener('click', () => toggleTile(index));
+        optionsEl.appendChild(button);
+        return button;
+      });
+      renderSolvedGroups();
+      renderScoreboard();
+      showFeedback('neutral', 'चार शब्द निवडा आणि “गट जुळवा” दाबा.', 'Pick four words, then tap “Match group”.');
+      updateSelectionUI();
+      roundOverlay.classList.add('hidden');
+    }
+    function toggleTile(index) {
+      if (roundEnded || tileButtons[index].disabled) return;
+      if (selectedIndices.has(index)) selectedIndices.delete(index);
+      else {
+        if (selectedIndices.size >= 4) {
+          showFeedback('neutral', 'एकावेळी फक्त ४ शब्द निवडा.', 'You can select only 4 words at a time.');
+          return;
+        }
+        selectedIndices.add(index);
+      }
+      tileButtons[index].setAttribute('aria-pressed', String(selectedIndices.has(index)));
+      updateSelectionUI();
+    }
+    function clearSelection() {
+      selectedIndices.forEach(index => tileButtons[index]?.setAttribute('aria-pressed', 'false'));
+      selectedIndices.clear();
+      updateSelectionUI();
+    }
+    function handleWrongGuess() {
+      wrongThisRound += 1;
+      totalWrong += 1;
+      const chosenWords = new Set([...selectedIndices].map(index => currentTiles[index].word));
+      const bestMatch = Math.max(...activeGroups().map(group => group.words.filter(word => chosenWords.has(word)).length));
+      renderScoreboard();
+      showFeedback('bad', `एका गटातील योग्य शब्द: ${toMarathiDigits(bestMatch)} / ४`, `Correct words in one group: ${bestMatch} / 4.`);
+      optionsEl.classList.remove('shake');
+      // Force a fresh animation on repeated wrong attempts.
+      void optionsEl.offsetWidth;
+      optionsEl.classList.add('shake');
+      window.setTimeout(() => optionsEl.classList.remove('shake'), 400);
+      clearSelection();
+    }
+    function handleCorrectGuess(group) {
+      solvedIds.add(group.id);
+      currentTiles.forEach((tile, index) => {
+        if (tile.groupId === group.id) {
+          tileButtons[index].disabled = true;
+          tileButtons[index].classList.remove('selected');
+          tileButtons[index].classList.add('tile-solved');
+          tileButtons[index].setAttribute('aria-pressed', 'false');
+          tileButtons[index].setAttribute('aria-label', `${tile.word} — गट सापडला`);
+        }
+      });
+      selectedIndices.clear();
+      renderSolvedGroups();
+      renderScoreboard();
+      updateSelectionUI();
+      showFeedback('good', `शाब्बास! “${group.title}” हा गट सापडला!`, `Great job! You found a group.`);
+      if (solvedIds.size === 4) finishRound();
+    }
+    function checkSelection() {
+      if (selectedIndices.size !== 4 || roundEnded) return;
+      const selectedWords = [...selectedIndices].map(index => currentTiles[index].word);
+      const match = activeGroups().find(group => group.words.every(word => selectedWords.includes(word)));
+      if (match) handleCorrectGuess(match);
+      else handleWrongGuess();
+    }
+    function finishRound() {
+      roundEnded = true;
+      const earned = pointsForRound();
+      totalScore += earned;
+      if (totalScore > highScore) {
+        highScore = totalScore;
+        saveHighScore(highScore);
+      }
+      renderScoreboard();
+      awardScore.textContent = `+${toMarathiDigits(earned)} गुण`;
+      roundOverlay.classList.remove('hidden');
+      if (roundIndex === ROUNDS.length - 1) {
+        overlayEmoji.textContent = '🏆';
+        overlayTitle.textContent = 'वा! सगळ्या फेऱ्या पूर्ण!';
+        overlayMessage.textContent = `तुम्ही सर्व ${toMarathiDigits(ROUNDS.length)} फेऱ्या पूर्ण केल्या. तुमचे एकूण गुण ${toMarathiDigits(totalScore)} आहेत!`;
+        nextRoundBtn.textContent = 'पुन्हा खेळा ↻';
+        overlayNote.textContent = 'आता पुन्हा खेळून नवा सर्वोच्च गुण मिळवा.';
+      } else {
+        overlayEmoji.textContent = '🌟';
+        overlayTitle.textContent = 'शाब्बास! फेरी पूर्ण!';
+        overlayMessage.textContent = 'तुम्ही या फेरीतील चारही गट शोधले.';
+        nextRoundBtn.textContent = 'पुढची फेरी →';
+        overlayNote.textContent = `चुकीचे प्रयत्न: ${toMarathiDigits(wrongThisRound)} · किमान गुण: २०`;
+      }
+      nextRoundBtn.focus({ preventScroll: true });
+    }
+    function nextRound() {
+      if (roundIndex === ROUNDS.length - 1) {
+        roundIndex = 0;
+        totalScore = 0;
+        totalWrong = 0;
+      } else {
+        roundIndex += 1;
+      }
+      loadRound();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    checkBtn.addEventListener('click', checkSelection);
+    clearBtn.addEventListener('click', () => {
+      clearSelection();
+      showFeedback('neutral', 'निवड पुसली. पुन्हा प्रयत्न करा!', 'Selection cleared. Try again!');
+    });
+    nextRoundBtn.addEventListener('click', nextRound);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !roundOverlay.classList.contains('hidden')) {
+        // The completed round must be acknowledged before proceeding.
+        nextRoundBtn.focus({ preventScroll: true });
+      }
+    });
+
+    renderScoreboard();
+    loadRound();
+  </script>
+</body>
+</html>
