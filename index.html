@@ -9,18 +9,28 @@
       font-family: "Noto Sans Devanagari", sans-serif;
       background-color: #fff8e1;
       margin: 0;
-      padding: 0;
+      padding: 1.5rem 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       text-align: center;
+      box-sizing: border-box;
+    }
+
+    .msa-logo {
+      height: 200px;
+      max-width: 90%;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 1rem;
     }
 
     h1 {
       color: #5d4037;
       margin-bottom: 2rem;
+      font-size: 1.5rem;
     }
 
     .game-links {
@@ -31,22 +41,62 @@
       max-width: 400px;
     }
 
-    a.game-btn {
+    a.game-btn,
+    summary.game-btn {
       display: block;
+      box-sizing: border-box;
+      width: 100%;
       background-color: #ffcc80;
       color: #4e342e;
       text-decoration: none;
-      font-size: 1.5rem;
+      font-family: inherit;
+      font-size: 1.25rem;
       font-weight: bold;
       padding: 1rem;
+      border: none;
       border-radius: 1rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s, background-color 0.2s;
+      cursor: pointer;
+      list-style: none;
     }
 
-    a.game-btn:hover {
+    a.game-btn:hover,
+    summary.game-btn:hover {
       background-color: #ffb74d;
       transform: translateY(-2px);
+    }
+
+    summary.game-btn::-webkit-details-marker {
+      display: none;
+    }
+
+    summary.game-btn::after {
+      content: " ▾";
+      float: right;
+    }
+
+    details[open] > summary.game-btn::after {
+      content: " ▴";
+    }
+
+    .sub-games {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      padding-left: 1rem;
+      border-left: 3px solid #ffcc80;
+    }
+
+    .sub-games a.game-btn {
+      font-size: 1.1rem;
+      padding: 0.85rem;
+      background-color: #ffe0b2;
+    }
+
+    .sub-games a.game-btn:hover {
+      background-color: #ffcc80;
     }
 
     .footer {
@@ -54,27 +104,51 @@
       color: #555;
       margin-top: 2rem;
       padding: 0 1rem;
+      max-width: 500px;
     }
 
     .footer a {
       color: #0077cc;
       text-decoration: underline;
     }
+
+    @media (max-width: 480px) {
+      .msa-logo {
+        height: 160px;
+      }
+
+      .game-links {
+        width: 90%;
+      }
+
+      a.game-btn,
+      summary.game-btn {
+        font-size: 1.15rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <img src="msalogo-400.jpg" class="msa-logo" alt="MSA logo" />
+
   <h1>🎯 मराठी शाळा ऑस्ट्रिया खेळ 🎯</h1>
 
   <div class="game-links">
     <a href="swar_game.html" class="game-btn">स्वर ओळखा 🎵</a>
     <a href="color_game.html" class="game-btn">रंग ओळखा 🎨</a>
     <a href="avayav_game.html" class="game-btn">अवयव ओळखा 🧠</a>
-    <a href="ka_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: क 📝</a>
-    <a href="kha_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: ख 📝</a>
-    <a href="ga_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: ग 📝</a>
-    <a href="gha_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: घ 📝</a>
-    <a href="chha_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: छ 📝</a>
-    <a href="za_chaudakhadi_game.html" class="game-btn">चौदाखडी ओळखा: झ 📝</a>
+
+    <details>
+      <summary class="game-btn">चौदाखडी ओळखा 📝</summary>
+      <div class="sub-games">
+        <a href="ka_chaudakhadi_game.html" class="game-btn">क — चौदाखडी</a>
+        <a href="kha_chaudakhadi_game.html" class="game-btn">ख — चौदाखडी</a>
+        <a href="ga_chaudakhadi_game.html" class="game-btn">ग — चौदाखडी</a>
+        <a href="gha_chaudakhadi_game.html" class="game-btn">घ — चौदाखडी</a>
+        <a href="chha_chaudakhadi_game.html" class="game-btn">छ — चौदाखडी</a>
+        <a href="za_chaudakhadi_game.html" class="game-btn">झ — चौदाखडी</a>
+      </div>
+    </details>
   </div>
 
   <div class="footer">
