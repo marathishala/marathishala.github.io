@@ -1,660 +1,339 @@
 <!DOCTYPE html>
 <html lang="mr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#fff8e1" />
-  <title>स्वर ओळखा!</title>
-
-  <style>
-    :root {
-      --cream: #fff8e1;
-      --paper: #ffffff;
-      --ink: #222222;
-      --line: #444444;
-      --green: #4caf50;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      width: 100%;
-      min-height: 100%;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      padding: 12px 0;
-      width: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
-      font-family: sans-serif;
-      background-color: var(--cream);
-      color: var(--ink);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      overflow-x: hidden;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    button:focus-visible,
-    input:focus-visible {
-      outline: 3px solid #3976c5;
-      outline-offset: 3px;
-    }
-
-    .page-wrapper {
-      width: 100%;
-      max-width: 920px;
-      min-width: 0;
-      margin: auto 0;
-      padding: 0 12px;
-    }
-
-    .brand-header {
-      text-align: center;
-      margin-bottom: 12px;
-      line-height: 1.5;
-    }
-
-    .brand-header img {
-      display: block;
-      width: auto;
-      height: auto;
-      max-width: min(200px, 60vw);
-      max-height: 200px;
-      object-fit: contain;
-      margin: 0 auto;
-    }
-
-    .game-container {
-      width: 100%;
-      min-width: 0;
-      height: auto;
-      min-height: 0;
-      background: var(--paper);
-      border: 4px solid var(--line);
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      gap: 12px;
-      padding: 16px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-      position: relative;
-    }
-
-    .game-title {
-      text-align: center;
-      font-size: clamp(1.3rem, 5vw, 2rem);
-      font-weight: bold;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
-
-    #progress {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    #patali,
-    #progressbar {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .scoreboard {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px 2rem;
-      margin-top: 4px;
-      font-size: clamp(1.1rem, 4vw, 1.8rem);
-      text-align: center;
-    }
-
-    .score-item {
-      font-weight: bold;
-      min-width: 0;
-    }
-
-    .score-item span {
-      display: inline-block;
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
-      margin-left: 0.25rem;
-      font-variant-numeric: tabular-nums;
-    }
-
-    #feedback {
-      font-size: clamp(1.2rem, 5vw, 2rem);
-      font-weight: bold;
-      text-align: center;
-      min-height: 3rem;
-      margin: 0;
-      overflow-wrap: anywhere;
-      transition: opacity 0.3s;
-      opacity: 0;
-    }
-
-    #feedback.show {
-      opacity: 1;
-    }
-
-    .sound-control {
-      text-align: center;
-      width: 100%;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 4px 0;
-    }
-
-    .sound-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      max-width: 100%;
-    }
-
-    .sound-arrow {
-      font-size: clamp(2rem, 8vw, 3rem);
-    }
-
-    button.play-btn {
-      flex: 0 0 auto;
-      background: var(--green);
-      border: none;
-      color: white;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      font-size: 2rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button.play-btn:hover {
-      background: #43a047;
-    }
-
-    button.play-btn:active {
-      transform: scale(0.96);
-    }
-
-    input[type="range"] {
-      width: clamp(75px, 25vw, 120px);
-      max-width: 100%;
-      min-width: 0;
-    }
-
-    .flash {
-      background-color: orange;
-      color: white;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    @keyframes flashAnim {
-      0% {
-        color: red;
-        transform: scale(1.3);
-      }
-      100% {
-        color: black;
-        transform: scale(1);
-      }
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      width: 100%;
-      min-width: 0;
-    }
-
-    .option-btn {
-      border: 2px solid var(--line);
-      border-radius: 12px;
-      width: 100%;
-      min-width: 0;
-      min-height: clamp(100px, 30vw, 200px);
-      height: auto;
-      font-weight: bold;
-      padding: 12px 8px;
-      color: var(--ink);
-      background: #fafafa;
-      cursor: pointer;
-      text-align: center;
-      overflow-wrap: anywhere;
-      white-space: normal;
-      line-height: 1.4;
-      font-size: clamp(1.1rem, 4.5vw, 1.7rem);
-      transition: transform 0.1s, background 0.3s;
-    }
-
-    .option-btn:hover {
-      background: #f0f0f0;
-    }
-
-    .option-btn:active {
-      transform: scale(0.98);
-    }
-
-    .disabled {
-      background-color: #ddd;
-      color: #888;
-      cursor: not-allowed;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: #666;
-      margin-top: 12px;
-      font-family: sans-serif;
-      overflow-wrap: anywhere;
-    }
-
-    @keyframes celebrate {
-      0% {
-        transform: scale(1) rotate(0deg);
-        background-color: white;
-      }
-      20% {
-        transform: scale(1.03) rotate(1deg);
-        background-color: #fff3e0;
-      }
-      40% {
-        transform: scale(1.04) rotate(-1deg);
-        background-color: #ffecb3;
-      }
-      60% {
-        transform: scale(1.02) rotate(1deg);
-        background-color: #fff3e0;
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-        background-color: white;
-      }
-    }
-
-    .game-container.celebrate {
-      animation: celebrate 1.5s ease;
-    }
-
-    .level-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      width: max-content;
-      max-width: calc(100% - 24px);
-      background: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      font-size: clamp(1.5rem, 6vw, 3rem);
-      font-weight: bold;
-      padding: 1rem;
-      border-radius: 1rem;
-      text-align: center;
-      overflow-wrap: anywhere;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s, transform 0.4s;
-      z-index: 110;
-    }
-
-    .level-message.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .confetti {
-      position: fixed;
-      top: -10px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      opacity: 0.9;
-      animation: fall 3s linear forwards;
-      z-index: 120;
-      pointer-events: none;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
-    }
-
-    .overlay-screen {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      background: var(--cream);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: max(18px, env(safe-area-inset-top))
-               18px
-               max(18px, env(safe-area-inset-bottom));
-      z-index: 100;
-    }
-
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: clamp(18px, 5vw, 32px);
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      width: 100%;
-      max-width: 400px;
-      min-width: 0;
-      flex: 0 0 auto;
-      margin: auto;
-      overflow-wrap: anywhere;
-    }
-
-    .card h1 {
-      margin-top: 0;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-      font-size: clamp(1.5rem, 6vw, 2rem);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 1rem;
-      line-height: 1.35;
-      font-size: clamp(1.2rem, 5vw, 1.5rem);
-    }
-
-    .card input[type="text"] {
-      display: block;
-      width: 100%;
-      min-width: 0;
-      padding: 12px;
-      border: 2px solid #999;
-      border-radius: 8px;
-      margin: 12px 0;
-      font-size: 1rem;
-    }
-
-    .card button {
-      max-width: 100%;
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--green);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      overflow-wrap: anywhere;
-    }
-
-    .certificate-card {
-      border: 4px solid gold;
-    }
-
-    .stars {
-      font-size: 2rem;
-      margin: 1rem 0;
-    }
-
-    .gold {
-      color: gold;
-    }
-
-    .name-error {
-      color: red;
-      font-size: 1rem;
-      margin-top: 0.5rem;
-      display: none;
-    }
-
-    #certDate {
-      margin-top: 1rem;
-      font-size: 1rem;
-      color: #555;
-    }
-
-    @media (max-width: 440px) {
-      body {
-        padding: 8px 0;
-      }
-
-      .page-wrapper {
-        padding-left: 8px;
-        padding-right: 8px;
-      }
-
-      .game-container {
-        border-width: 3px;
-        border-radius: 16px;
-        padding: 10px;
-        gap: 10px;
-      }
-
-      .scoreboard {
-        gap: 8px 12px;
-      }
-
-      .score-item span {
-        margin-left: 2px;
-      }
-
-      .options {
-        gap: 8px;
-      }
-
-      .option-btn {
-        min-height: clamp(95px, 29vw, 145px);
-        padding: 8px 4px;
-        border-radius: 10px;
-      }
-
-      button.play-btn {
-        width: 60px;
-        height: 60px;
-      }
-
-      .card {
-        padding: 20px 16px;
-      }
-    }
-
-    @media (max-width: 340px) {
-      .game-container {
-        padding: 8px;
-      }
-
-      .scoreboard {
-        gap: 8px;
-      }
-
-      .score-item span {
-        display: block;
-        margin: 3px 0 0;
-      }
-
-      .option-btn {
-        font-size: 1rem;
-        padding: 6px 3px;
-      }
-
-      .sound-buttons {
-        gap: 8px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div id="levelMessage" class="level-message"></div>
-
-  <!-- Start Screen -->
-  <div id="startScreen" class="overlay-screen">
-    <div class="card">
-      <h1>मराठी शाळा ऑस्ट्रिया</h1>
-      <h2>स्वर ओळखा खेळ</h2>
-      <h3>तुमचं नाव लिहा:</h3>
-
-      <input
-        type="text"
-        id="playerName"
-        placeholder="तुमचं नाव"
-        autocomplete="given-name"
-      />
-
-      <div id="nameError" class="name-error">
-        कृपया तुमचं नाव लिहा!
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>स्वर ओळखा!</title>
+    <style>
+     html, body {
+       margin: 0;
+       padding: 0;
+       width: 100%;
+       font-family: sans-serif;
+       background-color: #fff8e1;
+     }
+
+     /* Use dynamic viewport units */
+     body {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       min-height: 120dvh;
+       height: 120dvh;
+       overflow-x: hidden;
+     }
+     .game-container {
+       width: 90%;
+       min-width: 400px;
+       height: 80%;
+       background: white;
+       border: 4px solid #444;
+       border-radius: 20px;
+       display: flex;
+       flex-direction: column;
+       justify-content: space-between;
+       padding: 16px;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+     }
+     .scoreboard {
+       display: flex;
+       justify-content: center;
+       gap: 2rem;
+       margin-top: 1rem;
+       font-size: 1.8rem;
+       text-align: center;
+     }
+     .score-item {
+       font-weight: bold;
+     }
+     .score-item span {
+       font-size: 2.2rem;
+       margin-left: 0.5rem;
+     }
+     #feedback {
+       font-size: 2rem;
+       font-weight: bold;
+       text-align: center;
+       min-height: 4rem;
+       margin: 1rem 0 -1rem 0;
+       transition: opacity 0.3s;
+       opacity: 0;
+     }
+     #feedback.show {
+       opacity: 1;
+     }
+     .sound-control {
+       text-align: center;
+       flex: 1;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       margin: 10px;
+     }
+     .sound-buttons {
+       display: flex;
+       align-items: center;
+       gap: 1rem;
+     }
+     button.play-btn {
+       background: #4caf50;
+       border: none;
+       color: white;
+       border-radius: 50%;
+       width: 70px;
+       height: 70px;
+       font-size: 2rem;
+       cursor: pointer;
+       transition: background 0.3s, transform 0.2s;
+     }
+     button.play-btn:hover {
+       background: #43a047;
+       transform: scale(1.05);
+     }
+     input[type="range"] {
+       width: 120px;
+     }
+     .flash {
+       background-color: orange;
+       color: white;
+       padding: 0.2rem 0.5rem;
+       border-radius: 6px;
+       transition: background-color 0.3s, color 0.3s;
+     }
+     @keyframes flashAnim {
+       0% { color: red; transform: scale(1.3); }
+       100% { color: black; transform: scale(1); }
+     }
+
+     .options {
+       display: grid;
+       grid-template-columns: 1fr 1fr;
+       gap: 12px;
+       flex: 1;
+     }
+     .option-btn {
+       border: 2px solid #444;
+       border-radius: 12px;
+       width: 200px;
+       height: 200px;
+       font-weight: bold;
+       padding: 16px;
+       color: #222;
+       background: #fafafa;
+       cursor: pointer;
+       transition: transform 0.1s, background 0.3s;
+     }
+     footer {
+       text-align: center;
+       font-size: 0.8rem;
+       color: #666;
+       margin-top: 8px;
+       font-family: sans-serif;
+     }
+     /* --- Animations --- */
+
+     /* Celebrate animation for game finish */
+     @keyframes celebrate {
+       0% { transform: scale(1) rotate(0deg); background-color: white; }
+       20% { transform: scale(1.1) rotate(2deg); background-color: #fff3e0; }
+       40% { transform: scale(1.15) rotate(-2deg); background-color: #ffecb3; }
+       60% { transform: scale(1.1) rotate(1deg); background-color: #fff3e0; }
+       100% { transform: scale(1) rotate(0deg); background-color: white; }
+     }
+
+     .game-container.celebrate {
+       animation: celebrate 1.5s ease;
+     }
+     /* Floating center message overlay */
+     .level-message {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%) scale(0.9);
+       background: rgba(0, 0, 0, 0.8);
+       color: #fff;
+       font-size: 3rem;
+       font-weight: bold;
+       padding: 1rem 2rem;
+       border-radius: 1rem;
+       text-align: center;
+       opacity: 0;
+       pointer-events: none;
+       transition: opacity 0.4s, transform 0.4s;
+       z-index: 10;
+     }
+
+     .level-message.show {
+       opacity: 1;
+       transform: translate(-50%, -50%) scale(1);
+     }
+     /* --- Confetti animation --- */
+     .confetti {
+       position: fixed;
+       top: -10px;
+       width: 10px;
+       height: 10px;
+       border-radius: 50%;
+       opacity: 0.9;
+       animation: fall 3s linear forwards;
+       z-index: 100;
+     }
+
+     @keyframes fall {
+       0% {
+         transform: translateY(0) rotate(0deg);
+         opacity: 1;
+       }
+       100% {
+         transform: translateY(100vh) rotate(720deg);
+         opacity: 0;
+       }
+     }
+     .disabled {
+       background-color: #ddd;  /* Light gray background */
+       color: #aaa;             /* Light gray text */
+       cursor: not-allowed;     /* Change cursor to "not-allowed" */
+       opacity: 0.5;            /* Reduce opacity */
+       pointer-events: none;    /* Disable click interaction */
+     }
+     .overlay-screen {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100dvh;
+       background: #fff8e1;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 100;
+     }
+
+     .card {
+       background: white;
+       border-radius: 20px;
+       padding: 2rem;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+       text-align: center;
+       max-width: 400px;
+     }
+
+     .certificate-card {
+       border: 4px solid gold;
+     }
+
+     .card h1 {
+       margin-bottom: 0.5rem;
+     }
+
+     .card h2 {
+       margin-bottom: 1rem;
+     }
+
+     .stars {
+       font-size: 2rem;
+       margin: 1rem 0;
+     }
+
+     .gold {
+       color: gold;
+     }
+
+     .name-error {
+       color: red;
+       font-size: 1rem;
+       margin-top: 0.5rem;
+       display: none;
+     }
+
+     #certDate {
+       margin-top: 1rem;
+       font-size: 1rem;
+       color: #555;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="levelMessage" class="level-message"></div>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay-screen">
+      <div class="card">
+        <h1>मराठी शाळा ऑस्ट्रिया</h1>
+        <h2>स्वर ओळखा खेळ</h2>
+        <h3>तुमचं नाव लिहा:</h3>
+        <input type="text" id="playerName" placeholder="तुमचं नाव" />
+        <div id="nameError" class="name-error">कृपया तुमचं नाव लिहा!</div>
+        <p style="font-size: 0.9rem; color: #555; margin-top: 0.5rem;">
+          हे नाव फक्त खेळ पूर्ण झाल्यावर प्रमाणपत्रावर दाखवण्यासाठी वापरले जाते.
+          हे कुठेही साठवले जात नाही किंवा सर्व्हरकडे पाठवले जात नाही
+          (<a href="privacy.html" target="_blank" style="color: #0077cc; text-decoration: underline;">गोपनीयता धोरण</a>).
+        </p>
+        <button onclick="startGame()">सुरू करा ▶️</button>
       </div>
-
-      <p style="font-size: 0.9rem; color: #555; margin-top: 0.5rem; line-height: 1.5;">
-        हे नाव फक्त खेळ पूर्ण झाल्यावर प्रमाणपत्रावर दाखवण्यासाठी वापरले जाते.
-        हे कुठेही साठवले जात नाही किंवा सर्व्हरकडे पाठवले जात नाही
-        (<a href="privacy.html" target="_blank" rel="noopener noreferrer"
-            style="color: #0077cc; text-decoration: underline;">गोपनीयता धोरण</a>).
-      </p>
-
-      <button type="button" onclick="startGame()">सुरू करा ▶️</button>
     </div>
-  </div>
 
-  <!-- Certificate Screen -->
-  <div
-    id="certificateScreen"
-    class="overlay-screen"
-    style="display: none;"
-  >
-    <div class="card certificate-card">
-      <h1>🏆 स्वर ओळखा प्रमाणपत्र 🏆</h1>
-      <h2 id="certName">विद्यार्थ्याचे नाव</h2>
+    <!-- Certificate Screen -->
+    <div id="certificateScreen" class="overlay-screen" style="display:none;">
+      <div class="card certificate-card">
+        <h1>🏆 स्वर ओळखा प्रमाणपत्र 🏆</h1>
+        <h2 id="certName">विद्यार्थ्याचे नाव</h2>
 
-      <div class="stars" aria-label="तीन तारे">
-        <span class="gold">★</span>
-        <span class="gold">★</span>
-        <span class="gold">★</span>
+        <div class="stars">
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+        </div>
+
+        <p>खूप छान खेळलात!</p>
+        <div id="certDate"></div>
+
+        <button onclick="continueGame()">परत पहिल्यापासून 🔁</button>
       </div>
-
-      <p>खूप छान खेळलात!</p>
-      <div id="certDate"></div>
-
-      <button type="button" onclick="continueGame()">
-        परत पहिल्यापासून 🔁
-      </button>
     </div>
-  </div>
 
-  <main class="page-wrapper">
-    <header class="brand-header">
-      <img src="msalogo-400.jpg" alt="MSA logo" />
-      <div>मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.</div>
-    </header>
-
-    <section class="game-container" aria-label="स्वर ओळखा खेळ">
-      <div class="game-title">ऐकून स्वर ओळखा!</div>
-
-      <div id="progress">
-        <div id="patali"></div>
-        <div id="progressbar"></div>
+    <div class="page-wrapper">
+      <div style="text-align: center;">
+        <img src="msalogo-400.jpg" height="200" alt="MSA logo">
+        <br>मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
       </div>
+      <div class="game-container">
+        <div style="text-align: center; font-size:200%;">ऐकून स्वर ओळखा!</div>
+        <div id="progress" style="display: flex; justify-content: space-between; align-items: center;">
+          <div id="patali"></div>
+          <div id="progressbar"></div>
+        </div>
 
-      <div class="scoreboard">
-        <div class="score-item">
-          गुण: <span id="score">०००</span>
+        <div class="scoreboard">
+          <div class="score-item">गुण: <span id="score">०००</span></div>
+          <div class="score-item">सर्वोच्च: <span id="highscore">०००</span></div>
         </div>
-        <div class="score-item">
-          सर्वोच्च: <span id="highscore">०००</span>
+
+        <div id="feedback"></div>
+
+        <div class="sound-control">
+          <div class="sound-buttons">
+            <div style="font-size: 300%">→</div>
+            <button class="play-btn" id="playBtn">🔊</button>
+            <input
+              type="range"
+              id="volume"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.8"
+            />
+          </div>
         </div>
+
+        <div class="options" id="options"></div>
       </div>
-
-      <div id="feedback" aria-live="polite"></div>
-
-      <div class="sound-control">
-        <div class="sound-buttons">
-          <div class="sound-arrow" aria-hidden="true">→</div>
-
-          <button
-            class="play-btn"
-            id="playBtn"
-            type="button"
-            aria-label="स्वर पुन्हा ऐका"
-          >🔊</button>
-
-          <input
-            type="range"
-            id="volume"
-            min="0"
-            max="1"
-            step="0.05"
-            value="0.8"
-            aria-label="आवाजाची पातळी"
-          />
-        </div>
-      </div>
-
-      <div class="options" id="options"></div>
-    </section>
-
-    <footer>
-      &copy; 2025 Sagar Kale. |
-      <a href="privacy.html" target="_blank" rel="noopener noreferrer">
-        Privacy Policy
-      </a>
-    </footer>
-  </main>
+      <footer>
+        &copy; 2025 Sagar Kale. |
+        <a href="privacy.html" target="_blank">Privacy Policy</a>
+      </footer>
+    </div>
 
     <script>
      // Base64 mp3 placeholders (replace later)
