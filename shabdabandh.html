@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fff8e1" />
+  <meta name="description" content="मराठी शाळा ऑस्ट्रियाच्या विद्यार्थ्यांसाठी सोपा, मजेदार मराठी शब्दगटांचा खेळ." />
+  <title>शब्दबंध</title>
+  <style>
+    :root {
+      --cream: #fff8e1;
+      --paper: #ffffff;
+      --ink: #343434;
+      --muted: #706b61;
+      --green: #36864a;
+      --green-dark: #246a37;
+      --gold: #ffcf4a;
+      --gold-pale: #fff0bd;
+      --orange: #f29c38;
+      --lavender: #f0e9ff;
+      --line: #48443e;
+      --tile: #fffdf6;
+      --solved: #e7e6e1;
+      --shadow: 0 7px 0 rgba(67, 59, 42, .12), 0 10px 22px rgba(67, 59, 42, .08);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at 12px 12px, rgba(242,156,56,.12) 2px, transparent 2.7px) 0 0 / 28px 28px,
+        var(--cream);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Noto Sans Devanagari", "Nirmala UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
+    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    button:focus-visible { outline: 4px solid #5c76c9; outline-offset: 3px; }
+    .page-wrapper { width: min(100%, 920px); margin: auto; }
+    .brand-header { text-align: center; margin: 6px 0 16px; }
+    .brand-mark {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 7px 15px; border: 2px solid var(--ink); border-radius: 999px;
+      background: var(--paper); box-shadow: 0 4px 0 rgba(52,52,52,.10);
+      font-weight: 900; letter-spacing: .01em;
+    }
+    .brand-mark .mark { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--gold); font-size: 20px; transform: rotate(-7deg); }
+    .brand-header h1 { font-size: clamp(1.65rem, 5vw, 2.55rem); line-height: 1.12; margin: 10px 0 4px; font-weight: 950; }
+    .brand-header p { color: var(--muted); margin: 0; font-size: clamp(.92rem, 2.8vw, 1.08rem); }
+    .game-container {
+      width: 100%; background: var(--paper); border: 3px solid var(--line); border-radius: 24px;
+      padding: clamp(12px, 3vw, 24px); box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .game-container::before { content: ""; position: absolute; right: -24px; top: -26px; width: 82px; height: 82px; background: var(--gold-pale); border: 3px solid rgba(72,68,62,.13); border-radius: 25px; transform: rotate(19deg); pointer-events: none; }
+    .round-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; margin-bottom: 12px; }
+    .round-pill { background: var(--lavender); padding: 6px 11px; border: 1.5px solid #504761; border-radius: 999px; font-size: .9rem; font-weight: 800; }
+    .progress-text { color: var(--muted); font-weight: 750; font-size: .9rem; }
+    .scoreboard { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 10px 0 12px; }
+    .score-item { min-width: 0; text-align: center; padding: 10px 6px; border: 2px solid #e7dfc8; border-radius: 15px; background: #fffcf3; }
+    .score-label { display: block; font-size: clamp(.76rem, 2.6vw, .92rem); font-weight: 800; color: #61594a; line-height: 1.25; }
+    .score-value { display: block; margin-top: 3px; font-size: clamp(1.3rem, 4.6vw, 1.75rem); font-weight: 950; line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .round-score-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border: 2px solid #8a6410; border-radius: 16px; background: linear-gradient(105deg, #ffe28a, #fff1be);
+      padding: 10px 14px; margin-bottom: 15px; box-shadow: 0 3px 0 rgba(138,100,16,.13);
+    }
+    .round-score-copy { min-width: 0; }
+    .round-score-title { display: block; font-weight: 950; font-size: clamp(.93rem, 3vw, 1.12rem); }
+    .round-score-note { display: block; margin-top: 1px; font-size: .78rem; color: #65501f; }
+    .round-score-number { flex: 0 0 auto; min-width: 66px; text-align: center; font-size: clamp(1.8rem, 6vw, 2.25rem); font-weight: 1000; line-height: 1; color: #553d00; }
+    .instructions { margin: 0 auto 14px; text-align: center; font-size: clamp(.98rem, 3.2vw, 1.16rem); font-weight: 800; line-height: 1.45; max-width: 620px; }
+    .instructions small { display: block; font-size: .83em; font-weight: 550; color: var(--muted); margin-top: 2px; }
+    .options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(6px, 1.5vw, 11px); }
+    .option-btn {
+      min-width: 0; min-height: clamp(66px, 13vw, 94px); padding: 7px 3px;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      border: 2px solid #45413b; border-radius: 15px; background: var(--tile); color: var(--ink);
+      font-size: clamp(.92rem, 3.5vw, 1.52rem); font-weight: 900; line-height: 1.28;
+      overflow-wrap: anywhere; word-break: normal; cursor: pointer;
+      box-shadow: 0 4px 0 rgba(52,52,52,.12); transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .16s ease;
+    }
+    .option-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(52,52,52,.12); }
+    .option-btn:active:not(:disabled) { transform: translateY(1px) scale(.98); box-shadow: 0 2px 0 rgba(52,52,52,.12); }
+    .option-btn.selected { background: #e8e0ff; border-color: #684d9b; box-shadow: inset 0 0 0 2px #fff, 0 4px 0 rgba(83,61,132,.17); transform: translateY(-2px); }
+    .option-btn.tile-solved { background: var(--solved); color: #848178; border-color: #cbc9c2; box-shadow: none; cursor: default; opacity: .86; text-decoration: line-through; text-decoration-thickness: 1px; animation: solveFade .35s ease both; }
+    .game-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 16px 0 6px; }
+    .action-btn { min-height: 47px; border: 2px solid #2a6035; border-radius: 14px; padding: 10px 17px; font-weight: 900; cursor: pointer; transition: transform .15s ease, filter .15s ease, opacity .15s ease; }
+    .action-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
+    .action-btn:active:not(:disabled) { transform: translateY(1px); }
+    .action-btn:disabled { opacity: .42; cursor: not-allowed; }
+    .primary-btn { background: var(--green); color: white; box-shadow: 0 4px 0 var(--green-dark); }
+    .secondary-btn { background: white; color: #3b413b; border-color: #9a968c; box-shadow: 0 4px 0 rgba(80,73,60,.1); }
+    #feedback { min-height: 58px; margin: 9px 0 0; padding: 7px 9px; text-align: center; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; opacity: 1; }
+    #feedback .feedback-mr { font-weight: 900; font-size: clamp(.95rem, 3vw, 1.12rem); }
+    #feedback .feedback-en { color: var(--muted); font-size: .9rem; }
+    #feedback.good { background: #e8f6e9; color: #225d2c; animation: popIn .28s ease both; }
+    #feedback.bad { background: #fff0da; color: #793e0a; animation: popIn .24s ease both; }
+    #feedback.neutral { color: var(--muted); }
+    .solved-section { margin-top: 19px; padding-top: 14px; border-top: 2px dashed #d6cdb8; }
+    .solved-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 9px; }
+    .solved-heading h2 { margin: 0; font-size: 1.15rem; }
+    .solved-heading span { color: var(--muted); font-size: .84rem; font-weight: 750; }
+    .solved-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .solved-card { background: #f8f4e9; border: 1.5px solid #d8cba9; border-left: 6px solid var(--green); border-radius: 13px; padding: 9px 11px; animation: riseIn .35s ease both; min-width: 0; }
+    .solved-card h3 { margin: 0 0 3px; font-size: .98rem; }
+    .solved-card p { margin: 0; color: #554f43; line-height: 1.45; overflow-wrap: anywhere; font-size: .91rem; }
+    .empty-solved { color: #827b6d; font-size: .9rem; padding: 4px 0 7px; }
+    footer { color: #716a5e; text-align: center; font-size: .83rem; margin: 15px 6px 0; line-height: 1.5; }
+    footer strong { color: #514a3d; }
+    .overlay-screen { position: fixed; inset: 0; height: 100%; height: 100dvh; background: rgba(255,248,225,.88); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 18px; }
+    .overlay-screen.hidden { display: none; }
+    .overlay-card { width: min(100%, 420px); background: white; border: 3px solid var(--ink); border-radius: 24px; padding: clamp(22px, 6vw, 34px); text-align: center; box-shadow: 0 9px 0 rgba(67,59,42,.16), 0 18px 45px rgba(67,59,42,.18); animation: popIn .28s ease both; }
+    .overlay-emoji { font-size: 3rem; line-height: 1.2; }
+    .overlay-card h2 { margin: 9px 0 8px; font-size: clamp(1.55rem, 6vw, 2rem); line-height: 1.25; }
+    .overlay-card p { color: #615b50; margin: 7px 0 18px; line-height: 1.55; }
+    .award-score { font-size: 2.5rem; font-weight: 1000; color: #805800; margin: 4px 0 15px; }
+    .tiny-note { font-size: .83rem; color: #7b7467; margin-top: 12px; }
+    .shake { animation: shake .34s ease; }
+    @keyframes popIn { 0% { transform: scale(.96); opacity: .35; } 75% { transform: scale(1.025); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes solveFade { from { opacity: .4; transform: scale(.92); } to { opacity: .86; transform: scale(1); } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-4px); } 40%,80% { transform: translateX(4px); } }
+    @media (max-width: 440px) {
+      body { padding-left: 8px; padding-right: 8px; }
+      .brand-header { margin-bottom: 12px; }
+      .game-container { border-radius: 19px; padding: 11px; }
+      .scoreboard { gap: 5px; }
+      .score-item { padding: 8px 3px; border-radius: 12px; }
+      .round-score-banner { padding: 9px 11px; }
+      .option-btn { border-radius: 11px; min-height: 69px; padding: 5px 2px; font-size: clamp(.82rem, 3.55vw, 1.05rem); }
+      .solved-groups { grid-template-columns: 1fr; }
+      .game-controls { gap: 8px; }
+      .action-btn { flex: 1 1 0; padding-left: 3px; padding-right: 3px; font-size: clamp(.72rem, 3.1vw, .85rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-wrapper">
+    <header class="brand-header">
+        <div style="text-align: center;">
+        <img src="msalogo-400.jpg" height="200" alt="MSA logo">
+      </div>
+      <h1>शब्दबंध</h1>
+      <p>शब्दांचे गट शोधा आणि गुण मिळवा!</p>
+    </header>
+
+    <section class="game-container" aria-label="शब्दमित्र खेळ">
+      <div class="round-meta">
+        <span class="round-pill" id="roundLabel">फेरी १ / १३</span>
+        <span class="progress-text" id="progressText">सापडलेले गट: ० / ४</span>
+      </div>
+
+      <div class="scoreboard" aria-label="गुणफलक">
+        <div class="score-item"><span class="score-label">एकूण गुण</span><span class="score-value" id="score">०००</span></div>
+        <div class="score-item"><span class="score-label">सर्वोच्च गुण</span><span class="score-value" id="highscore">०००</span></div>
+        <div class="score-item"><span class="score-label">चुकीचे प्रयत्न</span><span class="score-value" id="wrongCount">०</span></div>
+      </div>
+
+      <div class="round-score-banner" aria-live="polite">
+        <div class="round-score-copy">
+          <span class="round-score-title">या फेरीचे गुण</span>
+          <span class="round-score-note">फेरी पूर्ण झाल्यावर मिळतील · प्रत्येक चुकीच्या प्रयत्नाला −२ गुण</span>
+        </div>
+        <span class="round-score-number" id="roundPotential">५०</span>
+      </div>
+
+      <p class="instructions">एकाच गटातील ४ शब्द निवडा.
+        <small>Choose 4 words that belong together.</small>
+      </p>
+
+      <div class="options" id="options" aria-label="शब्द निवडा"></div>
+
+      <div class="game-controls">
+        <button class="action-btn primary-btn" id="checkBtn" disabled>गट जुळवा ✓</button>
+        <button class="action-btn secondary-btn" id="clearBtn">निवड पुसा ↺</button>
+        <button class="action-btn primary-btn" id="nextRoundBtn" disabled>पुढची फेरी →</button>
+      </div>
+
+      <div id="feedback" class="neutral" role="status" aria-live="polite">
+        <span class="feedback-mr">चार शब्द निवडा आणि “गट जुळवा” दाबा.</span>
+        <span class="feedback-en">Pick four words, then tap “Match group”.</span>
+      </div>
+
+      <section class="solved-section" aria-label="सापडलेले गट">
+        <div class="solved-heading">
+          <h2>🎉 सापडलेले गट</h2>
+          <span id="solvedCount">० / ४</span>
+        </div>
+        <div class="empty-solved" id="emptySolved">गट सापडल्यावर ते इथे दिसतील.</div>
+        <div class="solved-groups" id="solvedGroups"></div>
+      </section>
+    </section>
+
+    <footer>
+        &copy; 2026 Marathi Shala Austria. |
+        <a href="privacy.html" target="_blank">Privacy Policy</a>
+    </footer>
+  </main>
+
+  <div class="overlay-screen hidden" id="roundOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+    <div class="overlay-card">
+      <div class="overlay-emoji" id="overlayEmoji" aria-hidden="true">🌟</div>
+      <h2 id="overlayTitle">शाब्बास!</h2>
+      <p id="overlayMessage">तुम्ही या फेरीतील चारही गट शोधले.</p>
+      <div class="award-score" id="awardScore">+५० गुण</div>
+      <button class="action-btn secondary-btn" id="closeOverlayBtn">बंद करा ✕</button>
+      <div class="tiny-note" id="overlayNote">छान खेळलात!</div>
+    </div>
+  </div>
+
+  <script>
+'use strict';
+
+// शब्दमित्रचा संपूर्ण शब्दसंग्रह: मुख्य गट → उपगट → शब्द.
+// प्रत्येक फेरीसाठी ४ वेगवेगळे मुख्य गट, प्रत्येकातून १ उपगट,
+// आणि त्या उपगटातून यादृच्छिक ४ शब्द निवडले जातात.
+const CATEGORY_DATA = [
+  {
+    title: 'प्राणी',
+    subgroups: [
+      { title: 'पाळीव प्राणी', words: ['कुत्रा', 'मांजर', 'ससा', 'गिनीपिग', 'हॅमस्टर'] },
+      { title: 'शेतातील प्राणी', words: ['गाय', 'बैल', 'म्हैस', 'शेळी', 'मेंढी', 'घोडा'] },
+      { title: 'वन्य प्राणी', words: ['वाघ', 'सिंह', 'हत्ती', 'अस्वल', 'कोल्हा', 'हरिण', 'लांडगा', 'बिबट्या', 'काळवीट', 'गवा', 'तरस'] },
+      { title: 'पाण्यातील प्राणी', words: ['मासा', 'खेकडा', 'देवमासा', 'डॉल्फिन', 'शार्क'] },
+      { title: 'सरपटणारे प्राणी', words: ['साप', 'नाग', 'अजगर', 'मगर', 'घोरपड', 'पाल'] },
+      { title: 'कीटक', words: ['मुंगी', 'माशी', 'डास', 'मधमाशी', 'फुलपाखरू', 'कोळी'] }
+    ]
+  },
+  {
+    title: 'पक्षी',
+    subgroups: [
+      { title: 'घराजवळ दिसणारे पक्षी', words: ['चिमणी', 'कावळा', 'कबूतर', 'मैना', 'बुलबुल', 'साळुंकी'] },
+      { title: 'पाण्याजवळचे पक्षी', words: ['बदक', 'हंस', 'बगळा', 'करकोचा', 'राजहंस', 'पेलिकन'] },
+      { title: 'शिकारी पक्षी', words: ['गरुड', 'घार', 'ससाणा', 'गिधाड', 'घुबड'] },
+      { title: 'रंगीबेरंगी पक्षी', words: ['मोर', 'पोपट', 'रोहित', 'खंड्या'] },
+      { title: 'उडता न येणारे पक्षी', words: ['पेंग्विन', 'शहामृग', 'इमू', 'किवी'] }
+    ]
+  },
+  {
+    title: 'भाज्या',
+    subgroups: [
+      { title: 'पालेभाज्या', words: ['पालक', 'मेथी', 'माठ', 'शेपू', 'चाकवत', 'अंबाडी'] },
+      { title: 'फळभाज्या', words: ['वांगे', 'टोमॅटो', 'भोपळा', 'ढोबळी मिरची', 'काकडी'] },
+      { title: 'शेंगभाज्या', words: ['गवार', 'फरसबी', 'वाल', 'मटार', 'घेवडा'] },
+      { title: 'जमिनीखालच्या भाज्या', words: ['गाजर', 'मुळा', 'बीट', 'रताळे', 'सुरण', 'बटाटा', 'कांदा'] },
+      { title: 'वेलीवर वाढणाऱ्या भाज्या', words: ['दोडका', 'दुधी', 'पडवळ', 'कारले', 'तोंडली'] }
+    ]
+  },
+  {
+    title: 'फुलं, फळं आणि झाडं',
+    subgroups: [
+      { title: 'फुले', words: ['गुलाब', 'कमळ', 'मोगरा', 'जास्वंद', 'चाफा', 'जुई', 'शेवंती', 'झेंडू', 'निशिगंध'] },
+      { title: 'गोड फळे', words: ['आंबा', 'केळे', 'चिकू', 'पपई', 'सीताफळ', 'फणस'] },
+      { title: 'आंबट फळे', words: ['लिंबू', 'आवळा', 'चिंच', 'संत्री', 'मोसंबी', 'पपनस', 'इडलिंबू'] },
+      { title: 'फळे', words: ['सफरचंद', 'द्राक्षे', 'पेरू', 'डाळिंब', 'अंजीर', 'जांभूळ', 'पीच'] },
+      { title: 'मोठी झाडे', words: ['वड', 'पिंपळ', 'कडुलिंब', 'साग', 'देवदार', 'सुरू', 'गुलमोहोर', 'बहावा'] }
+    ]
+  },
+  {
+    title: 'रंग',
+    subgroups: [
+      { title: 'रंग', words: ['लाल', 'निळा', 'हिरवा', 'पिवळा', 'काळा', 'पांढरा', 'गुलाबी', 'जांभळा', 'नारिंगी', 'तपकिरी', 'करडा', 'सोनेरी', 'रुपेरी', 'आकाशी', 'मोरपंखी'] }
+    ]
+  },
+  {
+    title: 'काळ',
+    subgroups: [
+      { title: 'आठवड्यातील वार', words: ['सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार', 'रविवार'] },
+      { title: 'इंग्रजी महिने', words: ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'] },
+      { title: 'मराठी महिने', words: ['चैत्र', 'वैशाख', 'ज्येष्ठ', 'आषाढ', 'श्रावण', 'भाद्रपद', 'आश्विन', 'कार्तिक', 'मार्गशीर्ष', 'पौष', 'माघ', 'फाल्गुन'] },
+      { title: 'ऋतू', words: ['उन्हाळा', 'पावसाळा', 'हिवाळा', 'वसंत', 'ग्रीष्म', 'वर्षा', 'हेमंत', 'शरद', 'शिशिर'] },
+      { title: 'काळाची एकके', words: ['सेकंद', 'मिनिट', 'तास', 'दिवस', 'आठवडा', 'पंधरवडा', 'महिना', 'वर्ष', 'दशक'] },
+      { title: 'दिवसातील वेळ', words: ['पहाट', 'सकाळ', 'दुपार', 'संध्याकाळ', 'रात्र'] },
+      { title: 'काळ दर्शवणारे शब्द', words: ['आज', 'उद्या', 'काल', 'परवा'] }
+    ]
+  },
+  {
+    title: 'घर',
+    subgroups: [
+      { title: 'स्वयंपाकघरातील भांडी', words: ['ताट', 'वाटी', 'तवा', 'पातेले', 'कढई', 'झारा', 'पळी', 'कुंडा', 'तसराळं'] },
+      { title: 'जेवणाच्या वस्तू', words: ['चमचा', 'काटा', 'ग्लास', 'कप', 'बशी'] },
+      { title: 'शयनगृहातील वस्तू', words: ['पलंग', 'उशी', 'गादी', 'चादर', 'पांघरूण', 'शाल'] },
+      { title: 'बैठकीतील वस्तू', words: ['सोफा', 'खुर्ची', 'टेबल', 'दिवाण', 'पडदा'] },
+      { title: 'घरातील उपकरणे', words: ['पंखा', 'दिवा', 'टीव्ही', 'फ्रीज', 'इस्त्री', 'मिक्सर', 'एसी'] },
+      { title: 'घराचे भाग', words: ['दार', 'खिडकी', 'छत', 'जिना', 'भिंत'] },
+      { title: 'स्नानगृहातील वस्तू', words: ['साबण', 'बादली', 'मग', 'टॉवेल', 'आरसा'] }
+    ]
+  },
+  {
+    title: 'नाती',
+    subgroups: [
+      { title: 'घरातील नाती', words: ['आई', 'बाबा', 'भाऊ', 'बहीण', 'मुलगा', 'मुलगी'] },
+      { title: 'आजी-आजोबांच्या पिढीतील नाती', words: ['आजी', 'आजोबा', 'पणजी', 'पणजोबा'] },
+      { title: 'आईकडील नाती', words: ['मामा', 'मामी', 'मावशी', 'मावसोबा'] },
+      { title: 'वडिलांकडील नाती', words: ['काका', 'काकू', 'आत्या', 'आतोबा'] },
+      { title: 'लग्नातून जोडलेली नाती', words: ['नवरा', 'बायको', 'सून', 'जावई', 'दीर', 'नणंद'] }
+    ]
+  },
+  {
+    title: 'सण',
+    subgroups: [
+      { title: 'सणवार', words: ['दिवाळी', 'दसरा', 'गुढीपाडवा', 'होळी', 'रंगपंचमी', 'गणेशोत्सव', 'नागपंचमी', 'रक्षाबंधन', 'भाऊबीज', 'मकरसंक्रांत', 'पोळा', 'जन्माष्टमी', 'रामनवमी', 'नवरात्र', 'ईद', 'ख्रिसमस'] }
+    ]
+  },
+  {
+    title: 'इतर',
+    subgroups: [
+      { title: 'भाषा', words: ['मराठी', 'हिंदी', 'इंग्रजी', 'जर्मन', 'फ्रेंच', 'संस्कृत'] },
+      { title: 'खेळ', words: ['कबड्डी', 'खो-खो', 'लगोरी', 'लपाछपी', 'पकडापकडी', 'आट्यापाट्या', 'क्रिकेट', 'फुटबॉल', 'बेसबॉल', 'जोडसाखळी'] },
+      { title: 'व्यवसाय', words: ['डॉक्टर', 'शिक्षक', 'शेतकरी', 'पोलीस', 'वकील', 'न्हावी', 'शिंपी', 'चांभार', 'कुंभार', 'लोहार', 'सोनार'] },
+      { title: 'मिठाई', words: ['लाडू', 'पेढा', 'बर्फी', 'जिलबी', 'मोदक', 'खीर', 'शिरा', 'गुलाबजाम'] },
+      { title: 'वाद्ये', words: ['ढोल', 'तबला', 'वीणा', 'बासरी', 'सतार', 'हार्मोनियम', 'संतूर', 'ताशा'] },
+      { title: 'वाहने', words: ['बस', 'कार', 'जीप', 'रिक्षा', 'रेल्वे', 'विमान', 'होडी', 'सायकल'] },
+      { title: 'शाळेतील वस्तू', words: ['पाटी', 'खडू', 'वही', 'पेन', 'पट्टी', 'दप्तर', 'पेन्सिल'] },
+      { title: 'शरीराचे अवयव', words: ['डोळा', 'कान', 'नाक', 'हात', 'पाय', 'मान', 'तोंड', 'जीभ', 'गुडघा', 'कोपर', 'दंड', 'पोट', 'पाठ', 'कंबर'] },
+      { title: 'खाण्याचे पदार्थ', words: ['पोळी', 'भात', 'वरण', 'भाकरी', 'खिचडी', 'उपमा'] },
+      { title: 'महाराष्ट्रातील शहरे', words: ['पुणे', 'मुंबई', 'नाशिक', 'नागपूर', 'सातारा', 'कोल्हापूर'] },
+      { title: 'महाराष्ट्रातील दुर्ग', words: ['रायगड', 'राजगड', 'तोरणा', 'सिंहगड', 'तिकोना', 'लोहगड', 'पुरंदर'] },
+      { title: 'देवांची नावे', words: ['गणपती', 'राम', 'कृष्ण', 'शंकर', 'विठ्ठल', 'हनुमान', 'विष्णू', 'दुर्गा', 'काली', 'लक्ष्मी', 'सरस्वती'] }
+    ]
+  }
+];
+
+const MARATHI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+const toMarathiDigits = (value) => String(value).replace(/[0-9]/g, digit => MARATHI_DIGITS[Number(digit)]);
+const formatScore = (value) => toMarathiDigits(String(value).padStart(3, '0'));
+
+const optionsEl = document.getElementById('options');
+const scoreEl = document.getElementById('score');
+const highscoreEl = document.getElementById('highscore');
+const wrongCountEl = document.getElementById('wrongCount');
+const roundPotentialEl = document.getElementById('roundPotential');
+const roundLabelEl = document.getElementById('roundLabel');
+const progressTextEl = document.getElementById('progressText');
+const solvedCountEl = document.getElementById('solvedCount');
+const solvedGroupsEl = document.getElementById('solvedGroups');
+const emptySolvedEl = document.getElementById('emptySolved');
+const feedbackEl = document.getElementById('feedback');
+const checkBtn = document.getElementById('checkBtn');
+const clearBtn = document.getElementById('clearBtn');
+const roundOverlay = document.getElementById('roundOverlay');
+const overlayTitle = document.getElementById('overlayTitle');
+const overlayMessage = document.getElementById('overlayMessage');
+const overlayEmoji = document.getElementById('overlayEmoji');
+const awardScore = document.getElementById('awardScore');
+const nextRoundBtn = document.getElementById('nextRoundBtn');
+const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+const overlayNote = document.getElementById('overlayNote');
+
+let roundNumber = 1;
+let totalScore = 0;
+let highScore = readHighScore();
+let wrongThisRound = 0;
+let totalWrong = 0;
+let solvedIds = new Set();
+let selectedIndices = new Set();
+let currentRoundGroups = [];
+let currentTiles = [];
+let tileButtons = [];
+let roundEnded = false;
+
+function readHighScore() {
+  try { return Math.max(0, Number(localStorage.getItem('shabdamitraHighScore')) || 0); }
+  catch (_) { return 0; }
+}
+function saveHighScore(value) {
+  try { localStorage.setItem('shabdamitraHighScore', String(value)); }
+  catch (_) { /* Storage can be unavailable in private browsing. */ }
+}
+function shuffle(array) {
+  const result = array.slice();
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function randomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+function pointsForRound() {
+  return Math.max(20, 50 - 2 * wrongThisRound);
+}
+function activeGroups() {
+  return currentRoundGroups.filter(group => !solvedIds.has(group.id));
+}
+
+function weightedSampleWithoutReplacement(items, count, getWeight) {
+  // प्रत्येक निवडीवेळी उरलेल्या गटांमधून शब्दसंख्येच्या प्रमाणात निवड करा.
+  const pool = items
+    .map(item => ({ item, weight: getWeight(item) }))
+    .filter(
+      entry => Number.isFinite(entry.weight) && entry.weight > 0
+    );
+
+  const chosen = [];
+
+  while (chosen.length < count && pool.length > 0) {
+    const totalWeight = pool.reduce(
+      (sum, entry) => sum + entry.weight,
+      0
+    );
+
+    let target = Math.random() * totalWeight;
+
+    let pickedIndex = pool.findIndex(entry => {
+      target -= entry.weight;
+      return target < 0;
+    });
+
+    if (pickedIndex < 0) {
+      pickedIndex = pool.length - 1;
+    }
+
+    chosen.push(pool[pickedIndex].item);
+
+    // एका फेरीत मुख्य गट पुन्हा निवडू नका.
+    pool.splice(pickedIndex, 1);
+  }
+
+  return chosen;
+}
+
+function createRoundGroups() {
+  // मुख्य गटातील एकूण शब्द जितके जास्त,
+  // तितकी तो गट निवडला जाण्याची शक्यता जास्त.
+  const selectedParents = weightedSampleWithoutReplacement(
+    CATEGORY_DATA,
+    4,
+    parent =>
+      parent.subgroups.reduce(
+        (sum, subgroup) => sum + subgroup.words.length,
+        0
+      )
+  );
+
+  return selectedParents.map((parent, index) => {
+    // ४ किंवा अधिक शब्द असलेलाच उपगट निवडण्यास पात्र आहे.
+    const eligibleSubgroups = parent.subgroups.filter(subgroup => subgroup.words.length >= 4);
+    const subgroup = randomItem(eligibleSubgroups);
+    return {
+      id: index + 1,
+      parentTitle: parent.title,
+      title: subgroup.title,
+      words: shuffle(subgroup.words).slice(0, 4)
+    };
+  });
+}
+function showFeedback(kind, marathi, english = '') {
+  feedbackEl.className = kind;
+  feedbackEl.replaceChildren();
+  const mr = document.createElement('span');
+  mr.className = 'feedback-mr';
+  mr.textContent = marathi;
+  feedbackEl.appendChild(mr);
+  if (english) {
+    const en = document.createElement('span');
+    en.className = 'feedback-en';
+    en.textContent = english;
+    feedbackEl.appendChild(en);
+  }
+}
+function renderScoreboard() {
+  scoreEl.textContent = formatScore(totalScore);
+  highscoreEl.textContent = formatScore(highScore);
+  wrongCountEl.textContent = toMarathiDigits(totalWrong);
+  roundPotentialEl.textContent = toMarathiDigits(pointsForRound());
+  roundLabelEl.textContent = `फेरी ${toMarathiDigits(roundNumber)} / ∞`;
+  progressTextEl.textContent = `सापडलेले गट: ${toMarathiDigits(solvedIds.size)} / ४`;
+  solvedCountEl.textContent = `${toMarathiDigits(solvedIds.size)} / ४`;
+}
+function renderSolvedGroups() {
+  solvedGroupsEl.replaceChildren();
+  emptySolvedEl.hidden = solvedIds.size > 0;
+  currentRoundGroups.filter(group => solvedIds.has(group.id)).forEach(group => {
+    const card = document.createElement('article');
+    card.className = 'solved-card';
+    const heading = document.createElement('h3');
+    heading.textContent = `✓ ${group.parentTitle} › ${group.title}`;
+    const words = document.createElement('p');
+    words.textContent = group.words.join(' · ');
+    card.append(heading, words);
+    solvedGroupsEl.appendChild(card);
+  });
+}
+function updateSelectionUI() {
+  tileButtons.forEach((button, index) => {
+    if (!button.disabled) button.classList.toggle('selected', selectedIndices.has(index));
+  });
+  checkBtn.disabled = selectedIndices.size !== 4 || roundEnded;
+  checkBtn.textContent = selectedIndices.size === 4 ? 'गट जुळवा ✓' : `गट जुळवा (${toMarathiDigits(selectedIndices.size)}/४)`;
+}
+function loadRound() {
+  solvedIds = new Set();
+  selectedIndices = new Set();
+  wrongThisRound = 0;
+  roundEnded = false;
+  nextRoundBtn.disabled = true;
+  currentRoundGroups = createRoundGroups();
+
+  // फेरी सुरू होताना बोर्ड एकदाच मिसळला जातो. गट सापडल्यावर
+  // त्यातील बटणे त्याच जागी राखाडी होतात; बाकीचे शब्द हलत नाहीत.
+  currentTiles = shuffle(currentRoundGroups.flatMap(group =>
+    group.words.map(word => ({ word, groupId: group.id }))
+  ));
+  optionsEl.replaceChildren();
+  tileButtons = currentTiles.map((tile, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'option-btn';
+    button.textContent = tile.word;
+    button.setAttribute('aria-pressed', 'false');
+    button.addEventListener('click', () => toggleTile(index));
+    optionsEl.appendChild(button);
+    return button;
+  });
+
+  renderSolvedGroups();
+  renderScoreboard();
+  showFeedback('neutral', 'चार शब्द निवडा आणि “गट जुळवा” दाबा.', 'Pick four words, then tap “Match group”.');
+  updateSelectionUI();
+  roundOverlay.classList.add('hidden');
+}
+function toggleTile(index) {
+  if (roundEnded || tileButtons[index].disabled) return;
+  if (selectedIndices.has(index)) selectedIndices.delete(index);
+  else {
+    if (selectedIndices.size >= 4) {
+      showFeedback('neutral', 'एकावेळी फक्त ४ शब्द निवडा.', 'You can select only 4 words at a time.');
+      return;
+    }
+    selectedIndices.add(index);
+  }
+  tileButtons[index].setAttribute('aria-pressed', String(selectedIndices.has(index)));
+  updateSelectionUI();
+}
+function clearSelection() {
+  selectedIndices.forEach(index => tileButtons[index]?.setAttribute('aria-pressed', 'false'));
+  selectedIndices.clear();
+  updateSelectionUI();
+}
+function handleWrongGuess() {
+  wrongThisRound += 1;
+  totalWrong += 1;
+  const chosenWords = new Set([...selectedIndices].map(index => currentTiles[index].word));
+  const bestMatch = Math.max(...activeGroups().map(group =>
+    group.words.filter(word => chosenWords.has(word)).length
+  ));
+  renderScoreboard();
+  showFeedback(
+    'bad',
+    `एका गटातील योग्य शब्द: ${toMarathiDigits(bestMatch)} / ४`,
+    `Correct words in one group: ${bestMatch} / 4.`
+  );
+  optionsEl.classList.remove('shake');
+  void optionsEl.offsetWidth;
+  optionsEl.classList.add('shake');
+  window.setTimeout(() => optionsEl.classList.remove('shake'), 400);
+  clearSelection();
+}
+function handleCorrectGuess(group) {
+  solvedIds.add(group.id);
+  currentTiles.forEach((tile, index) => {
+    if (tile.groupId === group.id) {
+      tileButtons[index].disabled = true;
+      tileButtons[index].classList.remove('selected');
+      tileButtons[index].classList.add('tile-solved');
+      tileButtons[index].setAttribute('aria-pressed', 'false');
+      tileButtons[index].setAttribute('aria-label', `${tile.word} — गट सापडला`);
+    }
+  });
+  selectedIndices.clear();
+  renderSolvedGroups();
+  renderScoreboard();
+  updateSelectionUI();
+  showFeedback('good', `शाब्बास! “${group.title}” हा गट सापडला!`, `Great job! You found a group.`);
+  if (solvedIds.size === 4) finishRound();
+}
+function checkSelection() {
+  if (selectedIndices.size !== 4 || roundEnded) return;
+  const selectedWords = [...selectedIndices].map(index => currentTiles[index].word);
+  const match = activeGroups().find(group =>
+    group.words.every(word => selectedWords.includes(word))
+  );
+  if (match) handleCorrectGuess(match);
+  else handleWrongGuess();
+}
+function finishRound() {
+  roundEnded = true;
+  const earned = pointsForRound();
+  totalScore += earned;
+  if (totalScore > highScore) {
+    highScore = totalScore;
+    saveHighScore(highScore);
+  }
+  renderScoreboard();
+  awardScore.textContent = `+${toMarathiDigits(earned)} गुण`;
+  roundOverlay.classList.remove('hidden');
+  overlayEmoji.textContent = '🌟';
+  overlayTitle.textContent = 'शाब्बास! फेरी पूर्ण!';
+  overlayMessage.textContent = 'तुम्ही या फेरीतील चारही गट शोधले.';
+  nextRoundBtn.disabled = false;
+  overlayNote.textContent = `चुकीचे प्रयत्न: ${toMarathiDigits(wrongThisRound)} · किमान गुण: २०`;
+  closeOverlayBtn.focus({ preventScroll: true });
+}
+function nextRound() {
+  roundNumber += 1;
+  loadRound();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+checkBtn.addEventListener('click', checkSelection);
+clearBtn.addEventListener('click', () => {
+  clearSelection();
+  showFeedback('neutral', 'निवड पुसली. पुन्हा प्रयत्न करा!', 'Selection cleared. Try again!');
+});
+nextRoundBtn.addEventListener('click', nextRound);
+closeOverlayBtn.addEventListener('click', () => {
+  roundOverlay.classList.add('hidden');
+  nextRoundBtn.focus({ preventScroll: true });
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !roundOverlay.classList.contains('hidden')) {
+    closeOverlayBtn.focus({ preventScroll: true });
+  }
+});
+
+renderScoreboard();
+loadRound();
+  </script>
+</body>
+</html>
